@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mally The Barber · Premium Grooming</title>
+  <meta name="description" content="Mally The Barber — premium haircuts, beard work, and grooming services. Book your appointment online today." />
+  <meta name="theme-color" content="#080808" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── RESET & BASE ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:         #080808;
+      --surface:    #101010;
+      --card:       #161616;
+      --gold:       #C9A455;
+      --gold-light: #E5C97A;
+      --gold-dim:   rgba(201,164,85,0.15);
+      --white:      #FFFFFF;
+      --off-white:  #E8E8E8;
+      --gray:       #777777;
+      --border:     #1C1C1C;
+      --radius:     6px;
+      --nav-h:      72px;
+    }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ─── LOADER ─── */
+    #loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 24px;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+    .loader-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(60px, 12vw, 120px);
+      letter-spacing: 0.12em;
+      color: var(--white);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: loaderReveal 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+    }
+    .loader-logo span { color: var(--gold); }
+    .loader-bar {
+      width: 200px; height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      animation: loaderReveal 0.4s ease 0.6s forwards;
+    }
+    .loader-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      width: 0%;
+      animation: loadBar 1.4s cubic-bezier(0.4,0,0.2,1) 0.7s forwards;
+    }
+    .loader-sub {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gray);
+      opacity: 0;
+      animation: loaderReveal 0.5s ease 0.9s forwards;
+    }
+    @keyframes loaderReveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes loadBar {
+      to { width: 100%; }
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(20px, 5vw, 60px);
+      transition: background 0.4s ease, border-color 0.4s ease;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(8,8,8,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom-color: var(--border);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      letter-spacing: 0.1em;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links {
+      display: flex; gap: 36px; list-style: none;
+      font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--off-white);
+    }
+    .nav-links a { transition: color 0.2s; }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      background: var(--gold);
+      color: var(--bg);
+      font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: var(--radius);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .hamburger {
+      display: none;
+      flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--white);
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      display: none;
+      position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0;
+      background: rgba(8,8,8,0.98);
+      backdrop-filter: blur(16px);
+      z-index: 99;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 36px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 40px; letter-spacing: 0.1em;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+    .mobile-menu .nav-cta {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px; padding: 14px 36px;
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(8,8,8,0.3) 0%, rgba(8,8,8,0.6) 60%, rgba(8,8,8,1) 100%),
+        url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1600&q=80') center/cover no-repeat;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(201,164,85,0.04) 0%, transparent 70%);
+    }
+    .hero-inner {
+      position: relative; z-index: 1;
+      padding: 0 20px;
+      max-width: 900px;
+    }
+    .hero-eyebrow {
+      font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      opacity: 0; transform: translateY(16px);
+      animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 2s forwards;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 11vw, 130px);
+      line-height: 0.92;
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+      opacity: 0; transform: translateY(24px);
+      animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 2.15s forwards;
+    }
+    .hero-title em {
+      display: block;
+      font-style: normal;
+      color: var(--gold);
+    }
+    .hero-sub {
+      font-size: clamp(14px, 2vw, 17px);
+      color: var(--off-white);
+      line-height: 1.6;
+      max-width: 520px;
+      margin: 0 auto 40px;
+      font-weight: 300;
+      opacity: 0; transform: translateY(16px);
+      animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 2.35s forwards;
+    }
+    .hero-btns {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+      opacity: 0; transform: translateY(16px);
+      animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 2.5s forwards;
+    }
+    .btn-primary {
+      background: var(--gold);
+      color: var(--bg);
+      font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase;
+      font-weight: 600;
+      padding: 16px 36px;
+      border-radius: var(--radius);
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(201,164,85,0.25);
+    }
+    .btn-outline {
+      border: 1px solid rgba(255,255,255,0.3);
+      color: var(--white);
+      font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase;
+      font-weight: 500;
+      padding: 16px 36px;
+      border-radius: var(--radius);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .btn-outline:hover {
+      border-color: var(--gold);
+      background: rgba(201,164,85,0.08);
+      transform: translateY(-2px);
+    }
+    .hero-scroll {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 3s forwards;
+    }
+    .hero-scroll span {
+      font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--gray);
+    }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease-in-out 3.2s infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTION SHARED ─── */
+    section { padding: clamp(80px, 12vw, 140px) clamp(20px, 5vw, 80px); }
+    .section-label {
+      font-size: 10px; letter-spacing: 0.45em; text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 7vw, 72px);
+      letter-spacing: 0.04em;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      font-size: 15px; color: var(--gray); line-height: 1.7;
+      max-width: 520px;
+    }
+    .section-header { margin-bottom: clamp(48px, 7vw, 80px); }
+
+    /* reveal animation */
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ─── SERVICES ─── */
+    #services { background: var(--bg); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .service-item {
+      background: var(--card);
+      padding: 24px 28px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      transition: background 0.25s;
+    }
+    .service-item:hover { background: #1A1A1A; }
+    .service-left { flex: 1; }
+    .service-name {
+      font-size: 14px; font-weight: 500;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .service-duration {
+      font-size: 12px; color: var(--gray);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .service-duration::before {
+      content: '';
+      display: inline-block; width: 16px; height: 1px;
+      background: var(--gold);
+    }
+    .service-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px; letter-spacing: 0.05em;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    .services-note {
+      margin-top: 28px;
+      font-size: 13px; color: var(--gray); text-align: center;
+    }
+    .services-note a {
+      color: var(--gold); border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .services-note a:hover { border-bottom-color: var(--gold); }
+
+    /* ─── BOOKING ─── */
+    #book {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .book-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: clamp(40px, 6vw, 80px);
+      align-items: start;
+    }
+    .book-left { position: sticky; top: calc(var(--nav-h) + 24px); }
+    .book-feature {
+      display: flex; align-items: flex-start; gap: 14px;
+      margin-top: 28px;
+    }
+    .book-feature-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      border-radius: 8px;
+      background: var(--gold-dim);
+      border: 1px solid rgba(201,164,85,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .book-feature-text h4 {
+      font-size: 14px; font-weight: 500; margin-bottom: 4px;
+    }
+    .book-feature-text p {
+      font-size: 13px; color: var(--gray); line-height: 1.5;
+    }
+    .book-right { min-height: 700px; }
+    .booking-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 4px;
+    }
+    .booking-wrap iframe {
+      width: 100%;
+      min-height: 700px;
+      border: none;
+      border-radius: 8px;
+    }
+
+    /* ─── BRANDS ─── */
+    #brands {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+    .brands-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
+      gap: 20px;
+    }
+    .brand-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px 36px;
+      background: var(--card);
+      display: flex; flex-direction: column; gap: 16px;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      text-decoration: none; color: var(--white);
+    }
+    .brand-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    }
+    .brand-tag {
+      font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--gold);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .brand-tag::before {
+      content: ''; display: block; width: 20px; height: 1px; background: var(--gold);
+    }
+    .brand-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(28px, 4vw, 38px);
+      letter-spacing: 0.06em;
+      line-height: 1;
+    }
+    .brand-desc {
+      font-size: 14px; color: var(--gray); line-height: 1.6;
+    }
+    .brand-link {
+      margin-top: auto;
+      font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold);
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 500;
+    }
+    .brand-link::after {
+      content: '→';
+      transition: transform 0.25s;
+    }
+    .brand-card:hover .brand-link::after { transform: translateX(5px); }
+
+    /* ─── ABOUT STRIP ─── */
+    #about {
+      background: linear-gradient(135deg, #0E0E0E 0%, #111008 100%);
+      border-top: 1px solid var(--border);
+    }
+    .about-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(40px, 7vw, 100px);
+      align-items: center;
+    }
+    .about-tagline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 4vw, 46px);
+      font-style: italic;
+      color: var(--gold);
+      line-height: 1.3;
+      margin-bottom: 20px;
+    }
+    .about-text {
+      font-size: 15px; color: var(--gray); line-height: 1.8;
+      margin-bottom: 16px;
+    }
+    .about-stats {
+      display: flex; gap: 40px; margin-top: 36px;
+    }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px; color: var(--gold); line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gray); margin-top: 4px;
+    }
+    .about-right {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .about-feature {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      display: flex; align-items: center; gap: 16px;
+      transition: border-color 0.25s;
+    }
+    .about-feature:hover { border-color: rgba(201,164,85,0.4); }
+    .about-feature-icon {
+      font-size: 24px; flex-shrink: 0;
+      width: 48px; height: 48px;
+      background: var(--gold-dim);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .about-feature-text h4 { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+    .about-feature-text p { font-size: 13px; color: var(--gray); }
+
+    /* ─── GALLERY ─── */
+    #gallery { background: var(--surface); border-top: 1px solid var(--border); }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+      gap: 12px;
+    }
+    .gallery-card {
+      position: relative; overflow: hidden;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      aspect-ratio: 3/4;
+      background: var(--card);
+    }
+    .gallery-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    .gallery-card:hover img { transform: scale(1.06); }
+    .gallery-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(8,8,8,0.9) 0%, rgba(8,8,8,0.1) 50%, transparent 100%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 20px;
+      opacity: 0.85; transition: opacity 0.3s;
+    }
+    .gallery-card:hover .gallery-card-overlay { opacity: 1; }
+    .gallery-card-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 0.06em;
+      line-height: 1; margin-bottom: 4px;
+    }
+    .gallery-card-type {
+      font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold);
+    }
+    .gallery-card-hint {
+      font-size: 11px; color: rgba(255,255,255,0.5);
+      margin-top: 8px;
+      opacity: 0; transform: translateY(4px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .gallery-card:hover .gallery-card-hint { opacity: 1; transform: translateY(0); }
+    .gallery-empty {
+      grid-column: 1/-1; text-align: center; padding: 60px 20px;
+      color: var(--gray);
+    }
+
+    /* ─── GALLERY LIGHTBOX ─── */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.92);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .lightbox.open { opacity: 1; pointer-events: all; }
+    .lightbox-inner {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      max-width: 860px; width: 100%;
+      max-height: 90vh;
+      transform: scale(0.95);
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .lightbox.open .lightbox-inner { transform: scale(1); }
+    .lightbox-img {
+      width: 52%;
+      flex-shrink: 0;
+      object-fit: cover;
+    }
+    .lightbox-info {
+      flex: 1; padding: 36px;
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+    .lightbox-close {
+      align-self: flex-end;
+      background: none; border: 1px solid var(--border);
+      color: var(--gray); cursor: pointer;
+      width: 32px; height: 32px; border-radius: 50%;
+      font-size: 16px; line-height: 1;
+      transition: all 0.2s; margin-bottom: 24px;
+    }
+    .lightbox-close:hover { color: var(--white); border-color: var(--white); }
+    .lightbox-tag {
+      font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 10px;
+    }
+    .lightbox-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px; letter-spacing: 0.04em;
+      line-height: 1; margin-bottom: 12px;
+    }
+    .lightbox-desc {
+      font-size: 14px; color: var(--gray); line-height: 1.6;
+      margin-bottom: auto;
+    }
+    .lightbox-book-btn {
+      display: block;
+      margin-top: 32px;
+      background: var(--gold); color: var(--bg);
+      text-align: center; padding: 15px 24px;
+      border-radius: var(--radius);
+      font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase;
+      font-weight: 600; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      width: 100%; font-family: 'Inter', sans-serif;
+    }
+    .lightbox-book-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .lightbox-service-note {
+      margin-top: 12px;
+      font-size: 12px; color: var(--gray);
+      text-align: center; line-height: 1.5;
+    }
+    @media (max-width: 600px) {
+      .lightbox-inner { flex-direction: column; }
+      .lightbox-img { width: 100%; height: 240px; }
+      .lightbox-info { padding: 24px; }
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: #050505;
+      border-top: 1px solid var(--border);
+      padding: 60px clamp(20px, 5vw, 80px) 32px;
+    }
+    .footer-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      flex-wrap: wrap; gap: 40px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+    .footer-brand { max-width: 280px; }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px; letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+    .footer-logo span { color: var(--gold); }
+    .footer-tagline {
+      font-size: 13px; color: var(--gray); line-height: 1.6;
+    }
+    .footer-col h5 {
+      font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .footer-col a {
+      font-size: 14px; color: var(--gray);
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom {
+      padding-top: 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-copy { font-size: 12px; color: var(--gray); }
+    .footer-copy span { color: var(--gold); }
+    .footer-socials {
+      display: flex; gap: 16px;
+    }
+    .footer-socials a {
+      font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gray); transition: color 0.2s;
+    }
+    .footer-socials a:hover { color: var(--gold); }
+
+    /* ─── DIVIDER ─── */
+    .gold-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.4;
+      margin: 0 clamp(20px, 5vw, 80px);
+    }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .book-inner { grid-template-columns: 1fr; }
+      .book-left { position: static; }
+      .about-inner { grid-template-columns: 1fr; }
+      .about-stats { gap: 24px; }
+      .footer-top { flex-direction: column; }
+    }
+    @media (max-width: 480px) {
+      .brands-grid { grid-template-columns: 1fr; }
+      .hero-btns { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-outline { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── LOADER ─── -->
+  <div id="loader">
+    <div class="loader-logo">MALLY <span>THE</span> BARBER</div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+    <div class="loader-sub">Premium Grooming · New Castle, Delaware</div>
+  </div>
+
+  <!-- ─── NAV ─── -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">MALLY <span>·</span> THE BARBER</a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#brands">Our Brands</a></li>
+    </ul>
+    <a href="#book" class="nav-cta">Book Now</a>
+    <div class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- ─── MOBILE MENU ─── -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#services" class="mobile-link">Services</a>
+    <a href="#gallery" class="mobile-link">Gallery</a>
+    <a href="#about" class="mobile-link">About</a>
+    <a href="#brands" class="mobile-link">Our Brands</a>
+    <a href="#book" class="nav-cta mobile-link">Book Appointment</a>
+  </div>
+
+  <!-- ─── HERO ─── -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Premium Barbershop · New Castle, DE</p>
+      <h1 class="hero-title">
+        THE SHARPEST<br/>
+        <em>CUT IN THE ROOM</em>
+      </h1>
+      <p class="hero-sub">
+        Precision cuts. Clean fades. Signature beard work.
+        Book your appointment online and walk in ready to look your best.
+      </p>
+      <div class="hero-btns">
+        <a href="#book" class="btn-primary">Book Your Appointment</a>
+        <a href="#services" class="btn-outline">View Services</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <div class="gold-line"></div>
+
+  <!-- ─── SERVICES ─── -->
+  <section id="services">
+    <div class="section-header">
+      <p class="section-label reveal">Services &amp; Pricing</p>
+      <h2 class="section-title reveal reveal-delay-1">WHAT WE DO</h2>
+      <p class="section-desc reveal reveal-delay-2">
+        Every service is crafted with precision. Pay in advance when you book, or settle up in person — your choice.
+      </p>
+    </div>
+
+    <div class="services-grid reveal">
+      <div class="service-item">
+        <div class="service-left">
+          <div class="service-name">Mens / Womens Haircut</div>
+          <div class="service-duration">45 min</div>
+        </div>
+        <div class="service-price">$40</div>
+      </div>
+      <div class="service-item">
+        <div class="service-left">
+          <div class="service-name">Signature Haircut &amp; Beard</div>
+          <div class="service-duration">55 min</div>
+        </div>
+        <div class="service-price">$45</div>
+      </div>
+      <div class="service-item">
+        <div class="service-left">
+          <div class="service-name">Children (Ages 1–4) Haircut</div>
+          <div class="service-duration">30 min</div>
+        </div>
+        <div class="service-price">$20+</div>
+      </div>
+      <div class="service-item">
+        <div class="service-left">
+          <div class="service-name">Children (Ages 5–12) Haircut</div>
+          <div class="service-duration">30 min</div>
+        </div>
+        <div class="service-price">$25</div>
+      </div>
+      <div class="service-item">
+        <div class="service-left">
+          <div class="service-name">Children (Ages 13–18) Haircut</div>
+          <div class="service-duration">30 min</div>
+        </div>
+        <div class="service-price">$30</div>
+      </div>
+      <div class="service-item">
+        <div class="service-left">
+          <div class="service-name">Shape-Up</div>
+          <div class="service-duration">30 min</div>
+        </div>
+        <div class="service-price">$15</div>
+      </div>
+      <div class="service-item">
+        <div class="service-left">
+          <div class="service-name">Beard Shape-Up / Trim</div>
+          <div class="service-duration">30 min</div>
+        </div>
+        <div class="service-price">$15</div>
+      </div>
+      <div class="service-item">
+        <div class="service-left">
+          <div class="service-name">Shampoo &amp; Conditioner</div>
+          <div class="service-duration">10 min</div>
+        </div>
+        <div class="service-price">$10</div>
+      </div>
+      <div class="service-item">
+        <div class="service-left">
+          <div class="service-name">Enhancements / Eye Brows</div>
+          <div class="service-duration">10 min</div>
+        </div>
+        <div class="service-price">$10</div>
+      </div>
+    </div>
+
+    <p class="services-note reveal">
+      💳 Pay in advance when booking · Cash &amp; card accepted in person ·
+      <a href="#book">Book your slot →</a>
+    </p>
+  </section>
+
+  <div class="gold-line"></div>
+
+  <!-- ─── GALLERY ─── -->
+  <section id="gallery">
+    <div class="section-header" style="text-align:center;max-width:600px;margin:0 auto clamp(48px,7vw,80px);">
+      <p class="section-label reveal" style="justify-content:center;display:flex;">The Work</p>
+      <h2 class="section-title reveal reveal-delay-1">CUT <span style="color:var(--gold)">GALLERY</span></h2>
+      <p class="section-desc reveal reveal-delay-2" style="margin:0 auto;">
+        Tap any photo to see the cut name, what service it is, and book it directly — no guessing what you want.
+      </p>
+    </div>
+    <div class="gallery-grid reveal" id="galleryGrid">
+      <!-- loaded dynamically -->
+      <div class="gallery-empty" style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray);">
+        <div style="font-size:32px;margin-bottom:12px;">✂️</div>
+        <p>Gallery loading...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── GALLERY LIGHTBOX ─── -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-inner">
+      <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+      <div class="lightbox-info">
+        <button class="lightbox-close" id="lightboxClose">✕</button>
+        <div class="lightbox-tag" id="lightboxTag">Cut Type</div>
+        <div class="lightbox-title" id="lightboxTitle">Cut Name</div>
+        <div class="lightbox-desc" id="lightboxDesc"></div>
+        <button class="lightbox-book-btn" id="lightboxBookBtn">Book This Cut →</button>
+        <p class="lightbox-service-note" id="lightboxNote"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="gold-line"></div>
+
+  <!-- ─── ABOUT ─── -->
+  <section id="about">
+    <div class="about-inner">
+      <div class="about-left">
+        <p class="section-label reveal">&nbsp;The Barber</p>
+        <p class="about-tagline reveal reveal-delay-1">"Sharp cuts,<br/>real craftsmanship."</p>
+        <p class="about-text reveal reveal-delay-2">
+          Mally brings years of experience, a steady hand, and an eye for detail to every single cut.
+          From classic fades to signature beard sculpting, every client leaves looking — and feeling — their best.
+        </p>
+        <p class="about-text reveal reveal-delay-2">
+          Book online, show up, and leave looking elite. It's that simple.
+        </p>
+        <div class="about-stats reveal reveal-delay-3">
+          <div>
+            <div class="stat-num">500+</div>
+            <div class="stat-label">Happy Clients</div>
+          </div>
+          <div>
+            <div class="stat-num">5★</div>
+            <div class="stat-label">Rating</div>
+          </div>
+          <div>
+            <div class="stat-num">9+</div>
+            <div class="stat-label">Services</div>
+          </div>
+        </div>
+      </div>
+      <div class="about-right">
+        <div class="about-feature reveal">
+          <div class="about-feature-icon">✂️</div>
+          <div class="about-feature-text">
+            <h4>Precision Cuts</h4>
+            <p>Every fade, taper, and line-up executed with detail</p>
+          </div>
+        </div>
+        <div class="about-feature reveal reveal-delay-1">
+          <div class="about-feature-icon">🧔</div>
+          <div class="about-feature-text">
+            <h4>Beard Mastery</h4>
+            <p>Signature beard sculpting, shape-ups, and trims</p>
+          </div>
+        </div>
+        <div class="about-feature reveal reveal-delay-2">
+          <div class="about-feature-icon">📱</div>
+          <div class="about-feature-text">
+            <h4>Easy Online Booking</h4>
+            <p>Reserve your spot 24/7 — no calls, no waiting</p>
+          </div>
+        </div>
+        <div class="about-feature reveal reveal-delay-3">
+          <div class="about-feature-icon">💳</div>
+          <div class="about-feature-text">
+            <h4>Pay Your Way</h4>
+            <p>Pre-pay online or pay cash &amp; card in person</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gold-line"></div>
+
+  <!-- ─── BOOKING ─── -->
+  <section id="book">
+    <div class="book-inner">
+      <div class="book-left">
+        <p class="section-label reveal">Appointments</p>
+        <h2 class="section-title reveal reveal-delay-1">BOOK<br/>YOUR CUT</h2>
+        <p class="section-desc reveal reveal-delay-2">
+          Select your service, pick a time that works for you, and lock in your spot. It takes less than 2 minutes.
+        </p>
+
+        <div class="book-feature reveal reveal-delay-2">
+          <div class="book-feature-icon">📅</div>
+          <div class="book-feature-text">
+            <h4>Live Availability</h4>
+            <p>Real-time calendar — see exactly what's open right now</p>
+          </div>
+        </div>
+        <div class="book-feature reveal reveal-delay-3">
+          <div class="book-feature-icon">🔔</div>
+          <div class="book-feature-text">
+            <h4>Automatic Reminders</h4>
+            <p>You'll get a confirmation + reminder before your appointment</p>
+          </div>
+        </div>
+        <div class="book-feature reveal reveal-delay-4">
+          <div class="book-feature-icon">💰</div>
+          <div class="book-feature-text">
+            <h4>Pre-Pay or Pay In Person</h4>
+            <p>Secure your spot with a payment, or pay the day of</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-right reveal reveal-delay-1">
+        <div class="booking-wrap">
+          <iframe
+            src="https://api.leadconnectorhq.com/widget/booking/uF3gavmzwUNiyOzmGFk1"
+            style="width:100%;border:none;overflow:hidden;min-height:700px;"
+            scrolling="no"
+            id="uF3gavmzwUNiyOzmGFk1_1779727964933"
+            title="Book an Appointment with Mally The Barber">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
+
+  <div class="gold-line"></div>
+
+  <!-- ─── OTHER BRANDS ─── -->
+  <section id="brands">
+    <div class="section-header" style="text-align:center;max-width:600px;margin:0 auto clamp(48px,7vw,80px);">
+      <p class="section-label reveal" style="justify-content:center;display:flex;">The Mally Universe</p>
+      <h2 class="section-title reveal reveal-delay-1">MORE FROM<br/><span style="color:var(--gold)">MALLY</span></h2>
+      <p class="section-desc reveal reveal-delay-2" style="margin:0 auto;">
+        One brand, multiple lanes. Check out Mally's other ventures built on the same foundation of quality and ambition.
+      </p>
+    </div>
+
+    <div class="brands-grid">
+      <a href="https://malsfamousseafoodgrill.com" target="_blank" rel="noopener" class="brand-card reveal">
+        <div class="brand-tag">Food Truck</div>
+        <div class="brand-name">MAL'S FAMOUS<br/>SEAFOOD &amp; GRILL</div>
+        <p class="brand-desc">
+          Fresh seafood, cheesesteaks, salmon tacos, and crab fries. Made to order daily.
+          The food truck that keeps the city coming back.
+        </p>
+        <div class="brand-link">Visit the site</div>
+      </a>
+
+      <a href="https://baronthemove.liv8.co" target="_blank" rel="noopener" class="brand-card reveal reveal-delay-1">
+        <div class="brand-tag">Mobile Bar</div>
+        <div class="brand-name">BAR ON<br/>THE MOVE</div>
+        <p class="brand-desc">
+          Delaware's premier mobile bar experience. Weddings, corporate events, festivals, and more —
+          the bar comes to you.
+        </p>
+        <div class="brand-link">Visit the site</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">MALLY <span>THE BARBER</span></div>
+        <p class="footer-tagline">1412 N Dupont Hwy · New Castle, DE 19720<br/>(302) 384-2469 · Book online, walk in sharp.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="#services">Services &amp; Pricing</a></li>
+          <li><a href="#about">About Mally</a></li>
+          <li><a href="#book">Book Appointment</a></li>
+          <li><a href="#brands">Our Other Brands</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Our Brands</h5>
+        <ul>
+          <li><a href="https://malsfamousseafoodgrill.com" target="_blank">Mal's Seafood &amp; Grill</a></li>
+          <li><a href="https://baronthemove.liv8.co" target="_blank">Bar on the Move</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="#book">Book Online</a></li>
+          <li><a href="tel:3023842469">(302) 384-2469</a></li>
+          <li><a href="mailto:273maljones@gmail.com">273maljones@gmail.com</a></li>
+          <li><a href="https://instagram.com" target="_blank">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 <span>Mally The Barber</span>. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://instagram.com" target="_blank">Instagram</a>
+        <a href="https://facebook.com" target="_blank">Facebook</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── LOADER ───
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+      }, 2200);
+    });
+
+    // ─── NAVBAR SCROLL ───
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // ─── HAMBURGER MENU ───
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // ─── SCROLL REVEAL ───
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    // ─── GALLERY SYSTEM ───
+    const FALLBACK_GALLERY = [
+      { id: 'f1', name: 'Clean Fade', type: 'Shape-Up', description: 'Crisp skin fade with a sharp lineup — the classic.', imageUrl: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&q=80' },
+      { id: 'f2', name: 'Signature Cut', type: 'Signature Haircut and Beard', description: 'Haircut + beard sculpted and shaped to perfection.', imageUrl: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&q=80' },
+      { id: 'f3', name: 'Beard Trim', type: 'Beard Shape-Up / Trim', description: 'Clean beard trim with defined edges.', imageUrl: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&q=80' },
+      { id: 'f4', name: 'Low Taper', type: 'Mens / Womens Haircut', description: 'Low taper fade — clean and versatile.', imageUrl: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&q=80' },
+    ];
+
+    async function loadGallery() {
+      const grid = document.getElementById('galleryGrid');
+      try {
+        const res = await fetch('/api/gallery');
+        if (!res.ok) throw new Error();
+        const items = await res.json();
+        renderGallery(items.length ? items : FALLBACK_GALLERY, grid);
+      } catch {
+        renderGallery(FALLBACK_GALLERY, grid);
+      }
+    }
+
+    function renderGallery(items, grid) {
+      if (!items.length) {
+        grid.innerHTML = '<div class="gallery-empty"><div style="font-size:32px;margin-bottom:12px;">✂️</div><p style="color:var(--gray)">No photos yet — check back soon.</p></div>';
+        return;
+      }
+      grid.innerHTML = items.map(item => `
+        <div class="gallery-card reveal" onclick="openLightbox(${JSON.stringify(item).replace(/"/g,'&quot;')})">
+          <img src="${item.imageUrl}" alt="${item.name}" loading="lazy" />
+          <div class="gallery-card-overlay">
+            <div class="gallery-card-name">${item.name}</div>
+            <div class="gallery-card-type">${item.type}</div>
+            <div class="gallery-card-hint">Tap to book this cut →</div>
+          </div>
+        </div>
+      `).join('');
+      // Re-run observer for newly added cards
+      grid.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
+
+    let currentLightboxItem = null;
+    function openLightbox(item) {
+      currentLightboxItem = item;
+      document.getElementById('lightboxImg').src = item.imageUrl;
+      document.getElementById('lightboxImg').alt = item.name;
+      document.getElementById('lightboxTag').textContent = item.type;
+      document.getElementById('lightboxTitle').textContent = item.name;
+      document.getElementById('lightboxDesc').textContent = item.description || 'Book this cut with Mally today.';
+      document.getElementById('lightboxNote').textContent = `Service: ${item.type}`;
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+    document.getElementById('lightbox').addEventListener('click', e => {
+      if (e.target === document.getElementById('lightbox')) closeLightbox();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    document.getElementById('lightboxBookBtn').addEventListener('click', () => {
+      closeLightbox();
+      const bookSection = document.getElementById('book');
+      const offset = 80;
+      const top = bookSection.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+      // Show a highlighted note above the booking widget
+      if (currentLightboxItem) {
+        showBookingBanner(currentLightboxItem.name, currentLightboxItem.type);
+      }
+    });
+
+    function showBookingBanner(name, type) {
+      let banner = document.getElementById('bookingBanner');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'bookingBanner';
+        banner.style.cssText = `
+          background: rgba(201,164,85,0.12);
+          border: 1px solid rgba(201,164,85,0.35);
+          border-radius: 8px;
+          padding: 14px 20px;
+          margin-bottom: 20px;
+          font-size: 14px;
+          display: flex; align-items: center; gap: 12px;
+          animation: fadeUp 0.4s ease forwards;
+        `;
+        const bookRight = document.querySelector('.book-right');
+        if (bookRight) bookRight.insertBefore(banner, bookRight.firstChild);
+      }
+      banner.innerHTML = `<span style="font-size:20px;">✂️</span><div><strong style="color:var(--gold);">Booking: ${name}</strong><br/><span style="color:var(--gray);font-size:13px;">Select "<strong style="color:var(--off-white);">${type}</strong>" in the calendar below</span></div><button onclick="this.parentElement.remove()" style="margin-left:auto;background:none;border:none;color:var(--gray);cursor:pointer;font-size:18px;padding:2px 6px;">×</button>`;
+    }
+
+    loadGallery();
+
+    // ─── GHL IFRAME HEIGHT LISTENER ───
+    window.addEventListener('message', (e) => {
+      if (typeof e.data === 'object' && e.data.type === 'SET_HEIGHT') {
+        const iframe = document.getElementById('uF3gavmzwUNiyOzmGFk1_1779727964933');
+        if (iframe) iframe.style.minHeight = e.data.height + 'px';
+      }
+    });
+
+    // ─── SMOOTH ANCHOR SCROLL WITH NAV OFFSET ───
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', (e) => {
+        const target = document.querySelector(anchor.getAttribute('href'));
+        if (!target) return;
+        e.preventDefault();
+        const offset = 80;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>
