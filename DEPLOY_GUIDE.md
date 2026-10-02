@@ -121,6 +121,6 @@ mally-barber/
 |-----|-------|
 | Location ID | `9e60YFK9nwS9SM8FtPO6` |
 | Calendar ID | `uF3gavmzwUNiyOzmGFk1` |
-| PIT Token | `pit-1bf41b46-4126-4f5d-8c25-2cc083cadda3` |
+| PIT Token | *(secret: Vercel env `GHL_PIT_TOKEN` only; never commit the value)* |
 | Business Email | `273maljones@gmail.com` |
 | Business Phone | `(302) 384-2469` |

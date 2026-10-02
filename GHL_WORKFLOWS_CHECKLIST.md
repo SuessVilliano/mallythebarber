@@ -108,7 +108,7 @@ For `/api/lead` (exit-intent popup) to create GHL contacts:
 
 | Variable | Value |
 |----------|-------|
-| `GHL_PIT_TOKEN` | `pit-1bf41b46-4126-4f5d-8c25-2cc083cadda3` |
+| `GHL_PIT_TOKEN` | *(secret: set in Vercel env only; never commit the value)* |
 | `GHL_LOCATION_ID` | `9e60YFK9nwS9SM8FtPO6` *(optional; defaults to this)* |
 
 Set both at Vercel → Project → Settings → Environment Variables → All
